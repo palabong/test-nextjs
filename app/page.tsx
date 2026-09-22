@@ -36,15 +36,19 @@ export interface LogRecord {
  * 
  * TODO: Connect this boundary to your real external log provider.
  */
-async function fetchExternalLogs(): Promise<LogRecord[]> {
-  // Replace this with your actual database call or production endpoint:
-  // e.g.,
-  // const res = await fetch("https://api.yourlogprovider.com/v1/logs", {
-  //   headers: { "Authorization": `Bearer ${process.env.LOG_API_KEY}` }
-  // })
-  // return res.json()
+async function fetchExternalLogs(search: string = '', level: string = 'all'): Promise<LogRecord[]> {
+  const url = new URL('/api/logs', window.location.origin)
+  if (search) url.searchParams.set('search', search)
+  if (level !== 'all') url.searchParams.set('level', level)
   
-  return []
+  const res = await fetch(url.toString())
+  if (!res.ok) {
+    if (res.status === 503) {
+      throw new Error('Database not configured')
+    }
+    throw new Error('Failed to fetch logs')
+  }
+  return res.json()
 }
 
 export default function LogRegistryPage() {

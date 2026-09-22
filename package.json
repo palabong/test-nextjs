@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",
@@ -14,8 +16,10 @@
     "@vercel/functions": "^3.9.8",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
+    "drizzle-orm": "^0.45.3",
     "lucide-react": "^1.16.0",
     "next": "16.3.3",
+    "postgres": "^3.4.9",
     "react": "^19",
     "react-dom": "^19",
     "shadcn": "^4.11.0",
@@ -27,8 +31,11 @@
     "@types/node": "^24",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "dotenv": "^18.0.2",
+    "drizzle-kit": "^0.31.11",
     "postcss": "^8.5",
     "tailwindcss": "^4.3.3",
+    "tsx": "^4.23.15",
     "typescript": "5.7.3"
   }
 }
