@@ -8,7 +8,16 @@ const connectionString = process.env.DATABASE_URL || '';
 // Create a safe connection pool. In serverless environments, connection management
 // is crucial. If DATABASE_URL is not provided (e.g. during build or local dev without .env),
 // we don't throw an error immediately, but queries will fail.
-const client = connectionString ? postgres(connectionString, { prepare: false }) : null;
+let client = null;
+if (connectionString) {
+  try {
+    // Validate it's a URL before passing to postgres to prevent crashes
+    new URL(connectionString);
+    client = postgres(connectionString, { prepare: false });
+  } catch (e) {
+    console.warn("Invalid DATABASE_URL provided. Operating in isolated mode.");
+  }
+}
 
 // Export the database instance with the schema applied
 export const db = client ? drizzle(client, { schema }) : null;
