@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 import { Database, ExternalLink, RefreshCw } from "lucide-react"
 
 import { IsolatedBanner } from "@/components/log-registry/IsolatedBanner"
@@ -82,12 +83,13 @@ export default function LogRegistryPage() {
           </div>
           
           <div className="flex items-center space-x-3">
-            <Button variant="outline" size="sm" className="cursor-pointer" asChild>
-              <Link href="/protected/dashboard">
-                Protected Dashboard
-                <ExternalLink className="size-3.5 ml-1.5" />
-              </Link>
-            </Button>
+            <Link
+              href="/protected/dashboard"
+              className={cn(buttonVariants({ variant: "outline", size: "sm", className: "cursor-pointer" }))}
+            >
+              Protected Dashboard
+              <ExternalLink className="size-3.5 ml-1.5" />
+            </Link>
           </div>
         </div>
       </header>
