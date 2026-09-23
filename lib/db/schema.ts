@@ -23,7 +23,7 @@ export const ingestionChannels = pgTable(
     type: text('type').notNull(), // 'webhook', 'batch', 'pull'
     providerName: text('provider_name').notNull(),
     enabled: boolean('enabled').default(true).notNull(),
-    config: jsonb('config').default('{}').notNull(), // Non-secret configuration
+    config: jsonb('config').default(sql`'{}'::jsonb`).notNull(), // Non-secret configuration
     createdAt: timestamp('created_at').defaultNow().notNull(),
     updatedAt: timestamp('updated_at').defaultNow().notNull(),
   },
@@ -53,7 +53,7 @@ export const logEvents = pgTable(
     message: text('message'),
     
     // Structured Data
-    metadata: jsonb('metadata').default('{}').notNull(),
+    metadata: jsonb('metadata').default(sql`'{}'::jsonb`).notNull(),
     rawPayload: jsonb('raw_payload'), // Preserved original payload if needed safely
     
     requestId: text('request_id'), // Correlation ID
