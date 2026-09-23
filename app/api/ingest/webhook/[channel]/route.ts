@@ -31,10 +31,15 @@ export async function POST(
     return NextResponse.json({ error: 'Channel not configured' }, { status: 404 });
   }
 
-  // 3. Authenticate with HMAC signature (assumes standard x-signature header)
-  const signature = request.headers.get('x-signature');
+  // 3. Authenticate with HMAC signature (assumes standard x-signature header or GitHub's X-Hub-Signature-256)
+  let signature = request.headers.get('x-signature') || request.headers.get('x-hub-signature-256');
   if (!signature) {
     return NextResponse.json({ error: 'Missing signature' }, { status: 401 });
+  }
+
+  // GitHub prefixes their signature with 'sha256='
+  if (signature.startsWith('sha256=')) {
+    signature = signature.replace('sha256=', '');
   }
 
   try {
