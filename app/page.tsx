@@ -44,7 +44,7 @@ async function fetchExternalLogs(search: string = '', level: string = 'all'): Pr
   const res = await fetch(url.toString())
   if (!res.ok) {
     if (res.status === 503) {
-      throw new Error('Database not configured')
+      throw new Error('ISOLATED')
     }
     throw new Error('Failed to fetch logs')
   }
@@ -58,6 +58,7 @@ export default function LogRegistryPage() {
   // Operational state flags
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [isIsolated, setIsIsolated] = useState(false)
   
   // Filtering and searching inputs (start empty)
   const [searchQuery, setSearchQuery] = useState("")
@@ -70,11 +71,17 @@ export default function LogRegistryPage() {
   const loadLogs = async () => {
     setLoading(true)
     setError(null)
+    setIsIsolated(false)
     try {
-      const data = await fetchExternalLogs()
+      const data = await fetchExternalLogs(searchQuery, levelFilter)
       setLogs(data)
-    } catch {
-      setError("Failed to contact the external log provider.")
+    } catch (err: any) {
+      if (err.message === 'ISOLATED') {
+        setIsIsolated(true)
+        setLogs([])
+      } else {
+        setError("Failed to contact the external log provider.")
+      }
     } finally {
       setLoading(false)
     }
@@ -164,6 +171,21 @@ export default function LogRegistryPage() {
         </div>
 
 
+
+        {isIsolated && (
+          <div className="bg-muted border border-border p-5 rounded-xl flex gap-4 items-start mb-8 text-sm leading-relaxed">
+            <Code className="size-5 text-primary shrink-0 mt-0.5" aria-hidden="true" />
+            <div className="space-y-1.5">
+              <h2 className="font-bold text-foreground">External Connection Required (Boundary Isolated)</h2>
+              <p className="text-muted-foreground text-xs">
+                The ingestion boundary is ready to receive records but is currently unconnected to a live database or API. No illustrative logs or dummy events are loaded.
+              </p>
+              <div className="text-[11px] font-mono bg-background p-3 rounded border border-border mt-3 text-muted-foreground select-all leading-normal">
+                {"// Connect your database to production by setting the DATABASE_URL environment variable."}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* FILTERING CONTROLS */}
         <div className="bg-card border border-border rounded-xl p-4 mb-6 grid grid-cols-1 sm:grid-cols-12 gap-4 items-center shadow-sm">
