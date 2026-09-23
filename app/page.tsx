@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, Fragment } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
@@ -126,12 +126,12 @@ export default function LogRegistryPage() {
           </div>
           
           <div className="flex items-center space-x-3">
-            <Link href="/protected/dashboard" passHref legacyBehavior>
-              <Button variant="outline" size="sm" className="cursor-pointer">
+            <Button variant="outline" size="sm" className="cursor-pointer" asChild>
+              <Link href="/protected/dashboard">
                 Protected Dashboard
                 <ExternalLink className="size-3.5 ml-1.5" />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           </div>
         </div>
       </header>
@@ -257,7 +257,7 @@ export default function LogRegistryPage() {
                   {filteredLogs.map((log) => {
                     const isExpanded = expandedLogId === log.id
                     return (
-                      <optgroup key={log.id} label={log.id} className="contents">
+                      <Fragment key={log.id}>
                         {/* Summary Row */}
                         <tr
                           onClick={() => toggleRow(log.id)}
@@ -323,7 +323,7 @@ export default function LogRegistryPage() {
                             </td>
                           </tr>
                         )}
-                      </optgroup>
+                      </Fragment>
                     )
                   })}
                 </tbody>

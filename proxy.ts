@@ -4,7 +4,7 @@ import { geolocation } from "@vercel/functions"
 
 // Edge middleware: Geo-fencing and automation filtering.
 // Runs on the edge network for the matched routes below.
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   // 1. Geo-IP boundary enforcement.
   const { country = "US" } = geolocation(request)
   const allowedRegions = ["GB", "FR", "BE", "IT", "DE", "US"]
