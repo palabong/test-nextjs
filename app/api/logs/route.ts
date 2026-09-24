@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
     const conditions = [];
 
     if (search && search.trim() !== '') {
-      const sanitizedSearch = `%${search.trim().replace(/[%_]/g, '')}%`; // Basic sanitize
+      const sanitizedSearch = `%${search.trim().replace(/[%_\\]/g, '\\$&')}%`; // Safely escape wildcards
       conditions.push(
         sql`(${logEvents.message} ILIKE ${sanitizedSearch} OR ${logEvents.sourceName} ILIKE ${sanitizedSearch} OR ${logEvents.externalEventId} ILIKE ${sanitizedSearch})`
       );
