@@ -44,12 +44,12 @@ export async function POST(request: NextRequest) {
     };
 
     const insertValues = [];
-    const channelId = 'batch_api';
+    const defaultChannelId = 'batch_api';
 
-    // Ensure the batch channel is registered in the database
+    // Ensure default batch channel is registered
     await db.insert(ingestionChannels)
       .values({
-        channelId: channelId,
+        channelId: defaultChannelId,
         name: 'Batch API Ingestion',
         type: 'batch',
         providerName: 'Batch API Adapter',
@@ -60,13 +60,29 @@ export async function POST(request: NextRequest) {
     for (let i = 0; i < payload.length; i++) {
       try {
         const record = payload[i];
-        const normalized = normalizeGenericPayload(record, 'Batch API');
+        const recordChannelId = (record.channel && typeof record.channel === 'string')
+          ? record.channel
+          : defaultChannelId;
+
+        if (recordChannelId !== defaultChannelId) {
+          await db.insert(ingestionChannels)
+            .values({
+              channelId: recordChannelId,
+              name: `Channel: ${recordChannelId}`,
+              type: 'stream',
+              providerName: recordChannelId,
+              enabled: true,
+            })
+            .onConflictDoNothing();
+        }
+
+        const normalized = normalizeGenericPayload(record, recordChannelId === 'edge_proxy' ? 'EdgeProxy' : 'Batch API');
         
         insertValues.push({
           externalEventId: normalized.externalEventId,
-          channelId: channelId,
+          channelId: recordChannelId,
           sourceName: normalized.sourceName,
-          occurredAt: normalized.occurredAt,
+          occurredAt: normalized.occurredAt || new Date(),
           level: normalized.level,
           message: normalized.message,
           metadata: normalized.metadata,
