@@ -77,6 +77,7 @@ export function proxy(request: NextRequest, event: NextFetchEvent) {
       Authorization: `Bearer ${token}`,
     },
     body: JSON.stringify([logRecord]),
+    signal: AbortSignal.timeout(3000),
   }).catch((err) => {
     console.error("Edge logging background error:", err)
   })
